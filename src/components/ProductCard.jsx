@@ -13,7 +13,7 @@ function ProductCard({ product }) {
         </Link>
       </figure>
       <div className="product__title">
-        <h3>{product.title}</h3>
+        <h3>{product.name}</h3>
       </div>
       <div className="price__add">
         <div className="product__price">

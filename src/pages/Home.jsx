@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import { assets } from '../assets/assets'
-import { products } from '../Data/products'
 import ProductCard from '../components/ProductCard'
 import Header from '../components/Header'
 import { useNavigate } from 'react-router-dom';
 
 
 function Home() {
-  const featuredProducts = products
   const navigate = useNavigate();
 
   const sliderImages = [
@@ -19,20 +17,52 @@ function Home() {
     assets.slider6,
   ]
 
+  
+  const [products, setProducts] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [search, setSearch] = useState('');
   const [sortedProducts, setSortedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate loading delay
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSortedProducts(featuredProducts);
-      setLoading(false);
-    }, 1500); // 1.5s loading
+  const fetchProducts = async () => {
+  try {
+    const urls = [
+      'https://dummyjson.com/products/category/beauty',
+          'https://dummyjson.com/products/category/fragrances',
+          'https://dummyjson.com/products/category/skin-care',
+          'https://dummyjson.com/products/category/womens-bags',
+          'https://dummyjson.com/products/category/mens-watches',
+          'https://dummyjson.com/products/category/sunglasses',
+          'https://dummyjson.com/products/category/womens-watches',
+          'https://dummyjson.com/products/category/womens-dresses',
+          'https://dummyjson.com/products/category/womens-shoes',
+          'https://dummyjson.com/products/category/mens-shirts',
+          'https://dummyjson.com/products/category/mens-shoes'
+    ];
 
-    return () => clearTimeout(timer);
-  }, [featuredProducts]);
+    const responses = await Promise.all(urls.map(url => fetch(url)));
+    const dataResults = await Promise.all(responses.map(res => res.json()));
+    const combinedProducts = dataResults.flatMap(result => result.products);
+    
+    const formatted = combinedProducts.map(item => ({
+      id: item.id,
+      name: item.title,
+      price: item.price,
+      image: item.thumbnail
+    }));
+
+    setProducts(formatted);
+    setSortedProducts(formatted);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  fetchProducts()
+}, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,7 +94,7 @@ function Home() {
   };
 
   const onSort = (sortType) => {
-    let sorted = [...featuredProducts];
+    let sorted = [...products];
     if (sortType === "LOW_TO_HIGH") {
       sorted.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
     } else if (sortType === "HIGH_TO_LOW") {
@@ -72,6 +102,7 @@ function Home() {
     }
     setSortedProducts(sorted);
   };
+
 
   return (
     <div className='home'>
@@ -132,7 +163,7 @@ function Home() {
                   ? Array.from({ length: 8 }).map((_, i) => (
                       <div key={i} className="product-skeleton"></div>
                     ))
-                  : sortedProducts.slice(0, 8).map((product) => (
+                  : sortedProducts.map((product) => (
                       <ProductCard product={product} key={product.id} />
                     ))
                 }

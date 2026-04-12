@@ -1,6 +1,5 @@
 import React  from 'react'
 import { assets } from '../assets/assets'
-import { products } from '../Data/products'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 

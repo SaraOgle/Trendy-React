@@ -369,13 +369,7 @@ img {
 }
 .target__row {
     padding: 0 px;
-    mask-image: linear-gradient(
-  to right, 
-  transparent 0%, 
-  black 20%, 
-  black 80%, 
-  transparent 100%
-);
+
     
 }
 
